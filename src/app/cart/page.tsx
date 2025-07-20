@@ -35,6 +35,7 @@ export default function CartPage() {
   });
   const [isContactLoading, setIsContactLoading] = useState(false);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -276,34 +277,36 @@ export default function CartPage() {
         }
       `}</style>
 
-      {/* 네비게이션 바 */}
+      {/* 네비게이션 바 - 모바일 최적화 */}
       <nav className="bg-white/80 backdrop-blur-md shadow-lg sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative flex items-center h-16">
-            <Link href="/" className="text-2xl font-bold text-transparent bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text -ml-8">
+          <div className="relative flex items-center justify-between h-16">
+            {/* 로고 */}
+            <Link href="/" className="text-xl md:text-2xl font-bold text-transparent bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text">
               AKUnurse
             </Link>
             
-            <div className="absolute left-1/2 transform -translate-x-1/2">
-              <div className="hidden md:flex space-x-8">
-                <Link href="/" className="text-sky-700 hover:text-sky-900 transition-colors font-semibold">홈</Link>
-                <Link href="/professors" className="text-sky-700 hover:text-sky-900 transition-colors font-semibold">교수 소개</Link>
-                <Link href="/courses" className="text-sky-700 hover:text-sky-900 transition-colors font-semibold">강의 신청</Link>
-                <Link href="/reviews" className="text-sky-700 hover:text-sky-900 transition-colors font-semibold">강의 리뷰</Link>
-                <Link href="/success-stories" className="text-sky-700 hover:text-sky-900 transition-colors font-semibold">합격 후기</Link>
-                <Link href="/my-class" className="text-sky-700 hover:text-sky-900 transition-colors font-semibold">My Class</Link>
-              </div>
+            {/* 데스크톱 메뉴 */}
+            <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 space-x-8">
+              <Link href="/" className="text-sky-700 hover:text-sky-900 transition-colors font-semibold">홈</Link>
+              <Link href="/professors" className="text-sky-700 hover:text-sky-900 transition-colors font-semibold">교수 소개</Link>
+              <Link href="/courses" className="text-sky-700 hover:text-sky-900 transition-colors font-semibold">강의 신청</Link>
+              <Link href="/reviews" className="text-sky-700 hover:text-sky-900 transition-colors font-semibold">강의 리뷰</Link>
+              <Link href="/success-stories" className="text-sky-700 hover:text-sky-900 transition-colors font-semibold">합격 후기</Link>
+              <Link href="/my-class" className="text-sky-700 hover:text-sky-900 transition-colors font-semibold">My Class</Link>
             </div>
             
-            <div className="ml-auto flex items-center space-x-4 -mr-8">
-              <Link href="/cart" className="relative">
-                <div className="w-6 h-6 cursor-pointer">
+            {/* 우측 메뉴 */}
+            <div className="flex items-center space-x-3">
+              {/* 장바구니 */}
+              <Link href="/cart" className="relative p-2">
+                <div className="w-5 h-5 md:w-6 md:h-6 cursor-pointer">
                   <svg viewBox="0 0 24 24" fill="none" className="w-full h-full text-sky-700 hover:text-sky-900 transition-colors">
                     <path d="M19 7H16V6C16 3.79086 14.2091 2 12 2C9.79086 2 8 3.79086 8 6V7H5C4.44772 7 4 7.44772 4 8V19C4 20.1046 4.89543 21 6 21H18C19.1046 21 20 20.1046 20 19V8C20 7.44772 19.5523 7 19 7ZM10 6C10 4.89543 10.8954 4 12 4C13.1046 4 14 4.89543 14 6V7H10V6ZM18 19H6V9H8V10C8 10.5523 8.44772 11 9 11C9.55228 11 10 10.5523 10 10V9H14V10C14 10.5523 14.4477 11 15 11C15.5523 11 16 10.5523 16 10V9H18V19Z" fill="currentColor"/>
                   </svg>
                 </div>
                 {cartItems.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 md:h-5 md:w-5 flex items-center justify-center text-xs">
                     {cartItems.length}
                   </span>
                 )}
@@ -311,15 +314,14 @@ export default function CartPage() {
               
               {/* 로그인 상태 표시 */}
               {isLoggedIn ? (
-                <div className="flex items-center space-x-3">
-                  <span className="text-sky-700 font-semibold">
+                <div className="hidden md:flex items-center space-x-3">
+                  <span className="text-sky-700 font-semibold text-sm">
                     {userName}님
                   </span>
                   <button 
                     onClick={() => {
                       setIsLoggedIn(false);
                       setUserName('');
-                      // localStorage에서 로그인 상태 제거
                       localStorage.removeItem('isLoggedIn');
                       localStorage.removeItem('userName');
                       alert('로그아웃되었습니다.');
@@ -330,47 +332,105 @@ export default function CartPage() {
                   </button>
                 </div>
               ) : (
-                                  <Link href="/login" className="text-gray-600 hover:text-gray-800 transition-colors font-bold text-sm">
-                로그인
-              </Link>
+                <Link href="/login" className="hidden md:block text-gray-600 hover:text-gray-800 transition-colors font-bold text-sm">
+                  로그인
+                </Link>
+              )}
+              
+              {/* 문의 버튼 - 데스크톱에서만 */}
+              <button 
+                onClick={() => setShowContactModal(true)}
+                className="hidden md:block text-gray-600 hover:text-gray-800 transition-colors font-bold text-sm"
+              >
+                문의
+              </button>
+              
+              {/* 모바일 햄버거 메뉴 */}
+              <button
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                className="md:hidden p-2 text-sky-700 hover:text-sky-900 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {showMobileMenu ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          {/* 모바일 메뉴 드롭다운 */}
+          {showMobileMenu && (
+            <div className="md:hidden absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-md shadow-lg border-t border-sky-100 z-40">
+              <div className="px-4 py-2 space-y-1">
+                <Link href="/" className="block px-3 py-2 text-sky-700 hover:text-sky-900 hover:bg-sky-50 rounded-lg transition-colors font-semibold" onClick={() => setShowMobileMenu(false)}>홈</Link>
+                <Link href="/professors" className="block px-3 py-2 text-sky-700 hover:text-sky-900 hover:bg-sky-50 rounded-lg transition-colors font-semibold" onClick={() => setShowMobileMenu(false)}>교수 소개</Link>
+                <Link href="/courses" className="block px-3 py-2 text-sky-700 hover:text-sky-900 hover:bg-sky-50 rounded-lg transition-colors font-semibold" onClick={() => setShowMobileMenu(false)}>강의 신청</Link>
+                <Link href="/reviews" className="block px-3 py-2 text-sky-700 hover:text-sky-900 hover:bg-sky-50 rounded-lg transition-colors font-semibold" onClick={() => setShowMobileMenu(false)}>강의 리뷰</Link>
+                <Link href="/success-stories" className="block px-3 py-2 text-sky-700 hover:text-sky-900 hover:bg-sky-50 rounded-lg transition-colors font-semibold" onClick={() => setShowMobileMenu(false)}>합격 후기</Link>
+                <Link href="/my-class" className="block px-3 py-2 text-sky-700 hover:text-sky-900 hover:bg-sky-50 rounded-lg transition-colors font-semibold" onClick={() => setShowMobileMenu(false)}>My Class</Link>
+                {isLoggedIn ? (
+                  <div className="px-3 py-2">
+                    <div className="text-sky-700 font-semibold text-sm mb-2">{userName}님</div>
+                    <button 
+                      onClick={() => {
+                        setIsLoggedIn(false);
+                        setUserName('');
+                        localStorage.removeItem('isLoggedIn');
+                        localStorage.removeItem('userName');
+                        setShowMobileMenu(false);
+                        alert('로그아웃되었습니다.');
+                      }}
+                      className="text-gray-600 hover:text-gray-800 transition-colors font-bold text-sm"
+                    >
+                      로그아웃
+                    </button>
+                  </div>
+                ) : (
+                  <Link href="/login" className="block px-3 py-2 text-sky-700 hover:text-sky-900 hover:bg-sky-50 rounded-lg transition-colors font-semibold" onClick={() => setShowMobileMenu(false)}>로그인</Link>
                 )}
-                
                 <button 
-                  onClick={() => setShowContactModal(true)}
-                  className="text-gray-600 hover:text-gray-800 transition-colors font-bold text-sm"
+                  onClick={() => {
+                    setShowContactModal(true);
+                    setShowMobileMenu(false);
+                  }}
+                  className="block w-full text-left px-3 py-2 text-sky-700 hover:text-sky-900 hover:bg-sky-50 rounded-lg transition-colors font-semibold"
                 >
                   문의
                 </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </nav>
 
-      {/* 장바구니 섹션 */}
-      <section className="py-16 px-4">
+      {/* 장바구니 섹션 - 모바일 최적화 */}
+      <section className="py-8 md:py-16 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-sky-900 mb-4">장바구니</h1>
-            <p className="text-sky-600 text-lg">선택하신 강의를 확인하고 결제를 진행해주세요</p>
+          <div className="text-center mb-8 md:mb-12">
+            <h1 className="text-3xl md:text-4xl font-bold text-sky-900 mb-2 md:mb-4">장바구니</h1>
+            <p className="text-sky-600 text-base md:text-lg">선택하신 강의를 확인하고 결제를 진행해주세요</p>
           </div>
 
           {cartItems.length === 0 ? (
-            /* 빈 장바구니 */
-            <div className="text-center py-16">
-              <div className="text-6xl mb-6">🛒</div>
-              <h2 className="text-2xl font-bold text-sky-900 mb-4">장바구니가 비어있습니다</h2>
-              <p className="text-sky-600 mb-8">다양한 간호학 강의를 둘러보고 학습을 시작해보세요</p>
-              <Link href="/courses" className="bg-sky-600 text-white px-8 py-3 rounded-lg hover:bg-sky-700 transition-colors font-semibold">
+            /* 빈 장바구니 - 모바일 최적화 */
+            <div className="text-center py-12 md:py-16">
+              <div className="text-4xl md:text-6xl mb-4 md:mb-6">🛒</div>
+              <h2 className="text-xl md:text-2xl font-bold text-sky-900 mb-2 md:mb-4">장바구니가 비어있습니다</h2>
+              <p className="text-sky-600 mb-6 md:mb-8 px-4">다양한 간호학 강의를 둘러보고 학습을 시작해보세요</p>
+              <Link href="/courses" className="bg-sky-600 text-white px-6 md:px-8 py-3 rounded-lg hover:bg-sky-700 transition-colors font-semibold text-sm md:text-base">
                 강의 둘러보기
               </Link>
             </div>
           ) : (
-            <div className="grid lg:grid-cols-3 gap-8">
-              {/* 장바구니 아이템 목록 */}
+            <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
+              {/* 장바구니 아이템 목록 - 모바일 최적화 */}
               <div className="lg:col-span-2">
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold text-sky-900">선택한 강의 ({cartItems.length}개)</h2>
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-lg p-4 md:p-6">
+                  <div className="flex items-center justify-between mb-4 md:mb-6">
+                    <h2 className="text-xl md:text-2xl font-bold text-sky-900">선택한 강의 ({cartItems.length}개)</h2>
                     <div className="flex items-center space-x-2">
                       <input
                         type="checkbox"
@@ -379,15 +439,15 @@ export default function CartPage() {
                         onChange={toggleSelectAll}
                         className="w-4 h-4 text-sky-600 bg-gray-100 border-gray-300 rounded focus:ring-sky-500"
                       />
-                      <label htmlFor="selectAll" className="text-sm font-medium text-sky-700">
+                      <label htmlFor="selectAll" className="text-xs md:text-sm font-medium text-sky-700">
                         전체 선택
                       </label>
                     </div>
                   </div>
                   
-                  <div className="space-y-6">
+                  <div className="space-y-4 md:space-y-6">
                     {cartItems.map((item) => (
-                      <div key={item.id} className="flex items-center space-x-4 p-4 border border-sky-100 rounded-xl">
+                      <div key={item.id} className="flex items-center space-x-3 md:space-x-4 p-3 md:p-4 border border-sky-100 rounded-lg md:rounded-xl">
                         {/* 체크박스 */}
                         <input
                           type="checkbox"
@@ -396,8 +456,8 @@ export default function CartPage() {
                           className="w-4 h-4 text-sky-600 bg-gray-100 border-gray-300 rounded focus:ring-sky-500 flex-shrink-0"
                         />
                         
-                        {/* 강의 썸네일 */}
-                        <div className="w-24 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                        {/* 강의 썸네일 - 모바일에서 작게 */}
+                        <div className="w-16 h-12 md:w-24 md:h-20 rounded-lg overflow-hidden flex-shrink-0">
                           <img 
                             src={getCourseImage(item.title)}
                             alt={item.title}
@@ -406,22 +466,22 @@ export default function CartPage() {
                         </div>
                         
                         {/* 강의 정보 */}
-                        <div className="flex-1">
-                          <h3 className="font-bold text-sky-900 mb-1">{item.title}</h3>
-                          <p className="text-sky-600 text-sm mb-2">{item.instructor} | {item.duration}</p>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-lg font-bold text-sky-900">{item.price.toLocaleString()}원</span>
-                            <span className="text-sm text-gray-500 line-through">{item.originalPrice.toLocaleString()}원</span>
-                            <span className="text-sm bg-red-100 text-red-600 px-2 py-1 rounded-full">{item.discount}% OFF</span>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-sky-900 mb-1 text-sm md:text-base line-clamp-2">{item.title}</h3>
+                          <p className="text-sky-600 text-xs md:text-sm mb-2">{item.instructor} | {item.duration}</p>
+                          <div className="flex flex-col md:flex-row md:items-center space-y-1 md:space-y-0 md:space-x-2">
+                            <span className="text-base md:text-lg font-bold text-sky-900">{item.price.toLocaleString()}원</span>
+                            <span className="text-xs md:text-sm text-gray-500 line-through">{item.originalPrice.toLocaleString()}원</span>
+                            <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full w-fit">{item.discount}% OFF</span>
                           </div>
                         </div>
                         
                         {/* 삭제 버튼 */}
                         <button
                           onClick={() => removeFromCart(item.id)}
-                          className="text-red-500 hover:text-red-700 transition-colors p-2"
+                          className="text-red-500 hover:text-red-700 transition-colors p-2 flex-shrink-0"
                         >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
                         </button>
@@ -431,30 +491,30 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {/* 주문 요약 */}
+              {/* 주문 요약 - 모바일 최적화 */}
               <div className="lg:col-span-1">
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 sticky top-24">
-                  <h2 className="text-2xl font-bold text-sky-900 mb-6">주문 요약</h2>
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-lg p-4 md:p-6 sticky top-24">
+                  <h2 className="text-xl md:text-2xl font-bold text-sky-900 mb-4 md:mb-6">주문 요약</h2>
                   
-                  <div className="space-y-4 mb-6">
+                  <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
                     <div className="flex justify-between items-center">
-                      <span className="text-sky-700">선택한 강의</span>
-                      <span className="font-semibold text-sky-900">{selectedItems.length}개 / {cartItems.length}개</span>
+                      <span className="text-sky-700 text-sm md:text-base">선택한 강의</span>
+                      <span className="font-semibold text-sky-900 text-sm md:text-base">{selectedItems.length}개 / {cartItems.length}개</span>
                     </div>
                     
                     <div className="flex justify-between items-center">
-                      <span className="text-sky-700">정가</span>
-                      <span className="text-gray-500 line-through">{getSelectedTotalOriginalPrice().toLocaleString()}원</span>
+                      <span className="text-sky-700 text-sm md:text-base">정가</span>
+                      <span className="text-gray-500 line-through text-sm md:text-base">{getSelectedTotalOriginalPrice().toLocaleString()}원</span>
                     </div>
                     
                     <div className="flex justify-between items-center">
-                      <span className="text-sky-700">할인 금액</span>
-                      <span className="text-red-600 font-semibold">-{(getSelectedTotalOriginalPrice() - getSelectedTotalPrice()).toLocaleString()}원</span>
+                      <span className="text-sky-700 text-sm md:text-base">할인 금액</span>
+                      <span className="text-red-600 font-semibold text-sm md:text-base">-{(getSelectedTotalOriginalPrice() - getSelectedTotalPrice()).toLocaleString()}원</span>
                     </div>
                     
                     <hr className="border-sky-200" />
                     
-                    <div className="flex justify-between items-center text-lg">
+                    <div className="flex justify-between items-center text-base md:text-lg">
                       <span className="font-bold text-sky-900">총 결제 금액</span>
                       <span className="font-bold text-sky-900">{getSelectedTotalPrice().toLocaleString()}원</span>
                     </div>
@@ -468,7 +528,7 @@ export default function CartPage() {
                       }
                       setShowPaymentModal(true);
                     }}
-                    className={`w-full py-4 rounded-lg font-bold text-lg mb-4 transition-all ${
+                    className={`w-full py-3 md:py-4 rounded-lg font-bold text-base md:text-lg mb-3 md:mb-4 transition-all ${
                       selectedItems.length > 0 
                         ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white hover:from-sky-600 hover:to-blue-700 transform hover:scale-105' 
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -477,7 +537,7 @@ export default function CartPage() {
                     {selectedItems.length > 0 ? '결제하기' : '강의를 선택해주세요'}
                   </button>
                   
-                  <Link href="/courses" className="block w-full bg-sky-100 text-sky-700 py-3 rounded-lg hover:bg-sky-200 transition-colors text-center font-semibold">
+                  <Link href="/courses" className="block w-full bg-sky-100 text-sky-700 py-2 md:py-3 rounded-lg hover:bg-sky-200 transition-colors text-center font-semibold text-sm md:text-base">
                     강의 더 둘러보기
                   </Link>
                 </div>
